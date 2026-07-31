@@ -1,3 +1,4 @@
+# import required modules
 import base64
 import json
 import sqlite3
@@ -15,17 +16,21 @@ from database import (
     get_upload_for_message,
 )
 
+# load environment variables from dotenv if available
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
     pass
 
+# initialize flask app and set secret key
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "secret-key")
 
+# setup the database
 init_db()
 
+# inject current user info into template context
 @app.context_processor
 def inject_user():
     user = None
@@ -36,6 +41,7 @@ def inject_user():
             user = dict(user)
     return {'current_user': user}
 
+# define list of available lessons
 LESSONS = [
     {
         "id": 1,
@@ -87,10 +93,12 @@ LESSONS = [
     },
 ]
 
+# set constants for upload limits and chat settings
 ALLOWED_IMAGE_TYPES = {"image/png", "image/jpeg", "image/gif", "image/webp"}
 MAX_IMAGE_BYTES = 10 * 1024 * 1024  # API limit headroom; keeps base64 payloads sane
 MAX_HISTORY_TURNS = 20
 
+# set system prompt for the ai helper
 # The following prompt was generated with AI
 SYSTEM_PROMPT = """You are the friendly AI coding helper on a Scratch tutorial website for kids and beginners.
 
@@ -102,14 +110,14 @@ Students upload screenshots of their Scratch block code when something isn't wor
 
 Never write text-based program code as the solution; describe which Scratch blocks to use and how to arrange them."""
 
-
+# find a lesson by its id
 def get_lesson(lesson_id):
     return next((l for l in LESSONS if l["id"] == lesson_id), None)
 
 
 _client = None
 
-
+# initialize and return openrouter client
 def get_client():
     global _client
     if _client is None:
@@ -119,12 +127,12 @@ def get_client():
         _client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
     return _client
 
-
+# render home page with lesson list
 @app.route("/")
 def index():
     return render_template("index.html", lessons=LESSONS)
 
-
+# render specific lesson page
 @app.route("/lesson/<int:lesson_id>")
 def lesson(lesson_id):
     lesson = get_lesson(lesson_id)
@@ -132,13 +140,14 @@ def lesson(lesson_id):
         abort(404)
     return render_template("lesson.html", lesson=lesson)
 
-
+# process chat input, screenshots, and generate ai responses
 @app.post("/api/analyze")
 def analyze():
     user_id = session.get('user_id')
     lesson = get_lesson(request.form.get("lesson_id", type=int) or 0)
     message = (request.form.get("message") or "").strip()
 
+    # parse and filter chat history
     try:
         history = json.loads(request.form.get("history") or "[]")
         assert isinstance(history, list)
@@ -158,6 +167,8 @@ def analyze():
     screenshot_mimetype = None
     screenshot = request.files.get("screenshot")
     has_screenshot = bool(screenshot and screenshot.filename)
+    
+    # process image upload if present
     if has_screenshot:
         if screenshot.mimetype not in ALLOWED_IMAGE_TYPES:
             return jsonify(error="Please upload a PNG, JPEG, GIF, or WebP image."), 400
@@ -175,6 +186,7 @@ def analyze():
             },
         })
 
+    # attach text prompt or default image message
     if message:
         content.append({"type": "text", "text": message})
     elif has_screenshot:
@@ -183,13 +195,16 @@ def analyze():
             "text": "Here's a screenshot of my Scratch code. Can you tell me what's wrong with it?",
         })
 
+    # validate that input exists
     if not content:
         return jsonify(error="Type a question or upload a screenshot first."), 400
 
+    # prepare system prompt
     system = SYSTEM_PROMPT
     if lesson:
         system += f"\n\nThe student is currently working through the lesson \"{lesson['title']}\" ({lesson['level']})."
 
+    # fetch openrouter client
     try:
         client = get_client()
     except Exception:
@@ -198,6 +213,7 @@ def analyze():
             "OPENROUTER_API_KEY environment variable and restart the server."
         )), 503
 
+    # send request to ai api
     try:
         messages = [{"role": "system", "content": system}] + history + [{"role": "user", "content": content}]
         response = client.chat.completions.create(
@@ -218,6 +234,7 @@ def analyze():
 
     reply = response.choices[0].message.content
 
+    # save chat message to database if user is logged in
     if user_id and lesson:
         save_chat_message(
             user_id=user_id,
@@ -230,6 +247,7 @@ def analyze():
 
     return jsonify(reply=reply)
 
+# handle user registration
 @app.route("/sign-up", methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
@@ -250,6 +268,7 @@ def sign_up():
 
     return render_template('sign_up.html')
 
+# handle user login
 @app.route("/log-in", methods=['GET', 'POST'])
 def log_in():
     if request.method == 'POST':
@@ -268,13 +287,13 @@ def log_in():
 
     return render_template("log_in.html")
 
-
+# log out current user
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
 
-
+# fetch chat history for a lesson
 @app.get("/api/chat-history/<int:lesson_id>")
 def get_lesson_chat_history(lesson_id):
     user_id = session.get('user_id')
@@ -293,7 +312,7 @@ def get_lesson_chat_history(lesson_id):
         })
     return jsonify(history=history)
 
-
+# serve uploaded image for a chat message
 @app.get("/api/chat-upload/<int:message_id>")
 def chat_upload(message_id):
     user_id = session.get('user_id')
@@ -305,6 +324,6 @@ def chat_upload(message_id):
         abort(404)
     return Response(upload['data'], mimetype=upload['mimetype'])
 
-
+# run server
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.getenv("PORT", "5000")))
