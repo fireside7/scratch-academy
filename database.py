@@ -1,12 +1,15 @@
 import sqlite3
 
+# set database file path
 DB_PATH = "users.db"
 
 def init_db():
     """init and create database"""
+    # connect to database
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
+    # create users table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,6 +22,7 @@ def init_db():
         )
     ''')
 
+    # create chat messages table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS chat_messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,6 +36,7 @@ def init_db():
         )
     ''')
 
+    # create chat uploads table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS chat_uploads (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,6 +48,7 @@ def init_db():
         )
     ''')
 
+    # save changes and close connection
     conn.commit()
     conn.close()
 
@@ -51,6 +57,7 @@ def create_user(first_name, last_name, email, phone_number, password_hash):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     try:
+        # insert new user record
         cursor.execute('''
             INSERT INTO users (first_name, last_name, email, phone_number, password_hash)
             VALUES (?, ?, ?, ?, ?)
@@ -65,6 +72,7 @@ def get_user_by_email(email):
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+    # find user by email
     cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
     user = cursor.fetchone()
     conn.close()
@@ -75,6 +83,7 @@ def get_user_by_id(user_id):
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+    # find user by id
     cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
     user = cursor.fetchone()
     conn.close()
@@ -87,6 +96,7 @@ def save_chat_message(user_id, lesson_id, user_message, assistant_reply, screens
 
     has_screenshot = 1 if screenshot_data else 0
 
+    # insert chat message
     cursor.execute('''
         INSERT INTO chat_messages (user_id, lesson_id, user_message, assistant_reply, has_screenshot)
         VALUES (?, ?, ?, ?, ?)
@@ -94,6 +104,7 @@ def save_chat_message(user_id, lesson_id, user_message, assistant_reply, screens
 
     message_id = cursor.lastrowid
 
+    # insert screenshot data if present
     if screenshot_data:
         cursor.execute('''
             INSERT INTO chat_uploads (message_id, mimetype, data)
@@ -105,32 +116,4 @@ def save_chat_message(user_id, lesson_id, user_message, assistant_reply, screens
 
     return message_id
 
-def get_chat_history(user_id, lesson_id, limit=50):
-    """Get the most recent chat messages"""
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT * FROM chat_messages
-        WHERE user_id = ? AND lesson_id = ?
-        ORDER BY id DESC
-        LIMIT ?
-    ''', (user_id, lesson_id, limit))
-    messages = cursor.fetchall()
-    conn.close()
-    return list(reversed(messages))
-
-def get_upload_for_message(message_id, user_id):
-    """Get the screenshot upload for a message"""
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT chat_uploads.mimetype, chat_uploads.data
-        FROM chat_uploads
-        JOIN chat_messages ON chat_messages.id = chat_uploads.message_id
-        WHERE chat_uploads.message_id = ? AND chat_messages.user_id = ?
-    ''', (message_id, user_id))
-    upload = cursor.fetchone()
-    conn.close()
-    return upload
+def get_chat_history(user_id,
