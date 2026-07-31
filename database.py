@@ -3,7 +3,7 @@ import sqlite3
 DB_PATH = "users.db"
 
 def init_db():
-    """Initialize database tables for users and chat history."""
+    """init and create database"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -47,7 +47,7 @@ def init_db():
     conn.close()
 
 def create_user(first_name, last_name, email, phone_number, password_hash):
-    """Create a user and return their new id. Raises sqlite3.IntegrityError if the email is taken."""
+    """create user"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     try:
@@ -71,7 +71,7 @@ def get_user_by_email(email):
     return user
 
 def get_user_by_id(user_id):
-    """Get user by ID."""
+    """Get user by ID"""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -81,7 +81,7 @@ def get_user_by_id(user_id):
     return user
 
 def save_chat_message(user_id, lesson_id, user_message, assistant_reply, screenshot_data=None, screenshot_mimetype=None):
-    """Save a chat message and optional screenshot to the database."""
+    """save chat messages"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -106,7 +106,7 @@ def save_chat_message(user_id, lesson_id, user_message, assistant_reply, screens
     return message_id
 
 def get_chat_history(user_id, lesson_id, limit=50):
-    """Get the most recent chat messages for a user on one lesson, oldest first."""
+    """Get the most recent chat messages"""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -121,7 +121,7 @@ def get_chat_history(user_id, lesson_id, limit=50):
     return list(reversed(messages))
 
 def get_upload_for_message(message_id, user_id):
-    """Get the screenshot upload for a message, but only if the message belongs to user_id."""
+    """Get the screenshot upload for a message"""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
