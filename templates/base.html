@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Scratch Academy{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+  {% block navbar %}
+  <header class="{% block header_class %}container{% endblock %}">
+    <nav>
+      <ul>
+        <li><a class="logo" href="{{ url_for('index') }}">🐱 Scratch<span>Academy</span></a></li>
+      </ul>
+      <ul>
+        {% if current_user %}
+          <li>Hello {{ current_user.first_name }}!</li>
+          <li><a href="/logout" role="button" class="secondary outline">Log Out</a></li>
+        {% else %}
+          <li><a href="/log-in" role="button" class="secondary outline">Log In</a></li>
+          <li><a href="/sign-up" role="button">Sign Up</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+  {% endblock %}
+
+  {% block content %}{% endblock %}
+
+  {% block scripts %}{% endblock %}
+
+</body>
+</html>

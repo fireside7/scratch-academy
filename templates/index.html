@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <main class="container">
+    <hgroup>
+      <h1>Learn to code with Scratch!</h1>
+      <p>Step-by-step lessons with an AI helper. Take a screenshot of your code and get feedback!</p>
+    </hgroup>
+
+    <section>
+      <h2>Lessons</h2>
+      <div class="lesson-grid">
+        {% for lesson in lessons %}
+        <a href="/lesson/{{lesson.id}}">
+          <article>
+            <header>
+              <span class="badge badge-{{ lesson.level | lower }}">{{ lesson.level }}</span>
+            </header>
+            <h3>Lesson {{ lesson.id }}: {{ lesson.title }}</h3>
+            <p>{{ lesson.blurb }}</p>
+            <footer>Start lesson →</footer>
+          </article>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+
+  <footer class="container">
+    <small>Website made by Roger Chao and Aahan Kumar</small>
+  </footer>
+{% endblock %}

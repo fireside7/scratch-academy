@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Log In{% endblock %}
+{% block navbar %}{% endblock %}
+
+{% block content %}
+  <main class="container form-page">
+    <article>
+      <h1>Log In</h1>
+
+      <form method="POST" action="/log-in">
+        <label for="email">Email
+          <input type="email" id="email" name="email" autocomplete="email" required>
+        </label>
+
+        <label for="password">Password
+          <input type="password" id="password" name="password" autocomplete="current-password" required>
+        </label>
+
+        <button type="submit">Log In</button>
+      </form>
+
+      <footer><a href="/">← Back to Homepage</a></footer>
+    </article>
+  </main>
+{% endblock %}

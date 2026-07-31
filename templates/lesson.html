@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Lesson {{ lesson.id }}: {{ lesson.title }} — Scratch Academy{% endblock %}
+{% block body_class %}lesson-page{% endblock %}
+{% block header_class %}container-fluid{% endblock %}
+
+{% block content %}
+  <main class="lesson-layout">
+
+    <!-- tutorials -->
+    <article class="tutorial">
+      <a href="{{ url_for('index') }}">← All lessons</a>
+      <div class="tutorial-header">
+        <span class="badge badge-{{ lesson.level | lower }}">{{ lesson.level }}</span>
+        <h1>Lesson {{ lesson.id }}: {{ lesson.title }}</h1>
+      </div>
+
+      <section>
+        <h2>What you'll learn</h2>
+        {%if lesson.id == 1%}
+          <p>Today you will learn how to interact with the scratch databse and understand the basics of sprites. In this lesson you'll
+          explore the key ideas behind <strong>{{ lesson.title }}</strong> and practice them
+          in your own Scratch project. </p>
+        {%else%}
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In this lesson you'll
+          explore the key ideas behind <strong>{{ lesson.title }}</strong> and practice them
+          in your own Scratch project. Sed do eiusmod tempor incididunt ut labore et
+          dolore magna aliqua.</p>
+        {%endif%}
+      </section>
+
+      <section>
+        <h2>Step One</h2>
+        {%if lesson.id == 1%}
+          <p>First, take a look around the scratch interface. The screen is divided into key areas: the code blocks on the left,
+             the code area in the middle where will you place and connect your blocks, and then the stage on the right where your
+             project will be displayed. Exploring and understanding where these elements are will help you as you build your projects.</p>
+          <blockquote><strong>Tip:</strong> Exploring and understanding where these elements are will help you as you build your projects.</blockquote>
+        {%else%}
+          <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat. Drag the blocks from the palette onto the
+            coding area and snap them together, just like puzzle pieces.</p>
+          <blockquote><strong>Tip:</strong> Placeholder tip text goes here.
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.</blockquote>
+        {%endif%}
+      </section>
+
+      <section>
+       <h2>Step Two</h2>
+        {%if lesson.id == 1%}
+          <p>Next, it is time to choose a chracter, known as a sprite. By default, you will see the Scratch Cat on the stage,
+             but you can click the Choose a Sprite icon in the bottom right corner to open a libray packed with different animals, people, and objects.
+            Pick a sprite that you like, and it will appear directly on your stage, ready to be programmed.</p>
+        {%else%}
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In this lesson you'll
+          explore the key ideas behind <strong>{{ lesson.title }}</strong> and practice them
+          in your own Scratch project. Sed do eiusmod tempor incididunt ut labore et
+          dolore magna aliqua.</p>
+        {%endif%}
+      </section>
+
+      <section>
+        <h2>Step three</h2>
+        {%if lesson.id == 1%}
+          <p>Now that your sprite is on stage, we can make it do something exciting! Go over to the block space on the lefts and click on motion.
+            Drag the first block, <em>move 10 steps</em>, to the middle workspace. Then snap a <em>when green flag clicked</em> block from the Events catergory right on
+            top of it. Now, click the green flag above the stage, and watch as your sprite takes it very first steps. We will explore motion more in the next lesson</p>
+          <blockquote><strong>Tip:</strong> Always make sure you have a when green flag clicked block connect to blocks you want to run.</blockquote>
+        {%else%}
+          <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat. Drag the blocks from the palette onto the
+            coding area and snap them together, just like puzzle pieces.</p>
+          <blockquote><strong>Tip:</strong> Placeholder tip text goes here.
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.</blockquote>
+        {%endif%}
+      </section>
+
+      <section>
+        <h2>🏁 Challenge</h2>
+        {%if lesson.id == 1%}
+          <p>For a challenge, create a bunch of sprites (at least 5) and have a dance party!</p>
+        {%else%}
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In this lesson you'll
+          explore the key ideas behind <strong>{{ lesson.title }}</strong> and practice them
+          in your own Scratch project. Sed do eiusmod tempor incididunt ut labore et
+          dolore magna aliqua.</p>
+        {%endif%}
+      </section>
+    </article>
+
+    <!--chatbot (right side)-->
+    <aside class="helper">
+      <header>
+        <span class="emoji">🤖</span>
+        <div>
+          <h2>AI Code Helper</h2>
+          <p>Upload a screenshot of your blocks and I'll spot what's wrong!</p>
+        </div>
+      </header>
+
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg msg-ai">
+          <p>Hi! I'm your coding helper. Stuck? Take a screenshot of your Scratch code, upload it with the 📷 button below or paste using Ctrl+V, and I'll tell you what's going on!</p>
+        </div>
+      </div>
+
+      <form class="chat-form" id="chat-form">
+        <div class="hidden" id="attach-preview">
+          <img id="attach-thumb" alt="Screenshot preview">
+          <button type="button" class="secondary" id="attach-remove" title="Remove screenshot">✕</button>
+        </div>
+        <div class="chat-input-row">
+          <label for="screenshot-input" title="Upload a screenshot">📷</label>
+          <input type="file" id="screenshot-input" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+          <input type="text" id="chat-text" placeholder="Ask a question (optional)…" autocomplete="off">
+          <button type="submit" id="send-btn">Send</button>
+        </div>
+      </form>
+    </aside>
+
+  </main>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    const LESSON_ID = "{{ lesson.id }}";
+    const IS_LOGGED_IN = {{ 'true' if current_user else 'false' }};
+  </script>
+  <script src="{{ url_for('static', filename='lesson.js') }}"></script>
+{% endblock %}

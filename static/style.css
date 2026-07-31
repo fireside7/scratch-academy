@@ -1,0 +1,70 @@
+.logo { font-size: 1.25rem; font-weight: 700; text-decoration: none; color: inherit; }
+.logo span { color: var(--pico-primary); }
+
+/* difficulty badges (beginner intermediate advanced) */
+.badge { display: inline-block; padding: .15rem .7rem; border-radius: 1rem; font-size: .7rem; font-weight: 700; color: #fff; white-space: nowrap; }
+.badge-beginner     { background: #2ec27e; }
+.badge-intermediate { background: #4d97ff; }
+.badge-advanced     { background: #9966ff; }
+
+/* lesson grid */
+.lesson-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: var(--pico-spacing); }
+.lesson-grid > a { text-decoration: none; color: inherit; }
+.lesson-grid article { height: 100%; margin: 0; display: flex; flex-direction: column; }
+.lesson-grid article p { flex: 1; }
+.lesson-grid article footer { color: var(--pico-primary); font-weight: 600; }
+.lesson-grid > a:hover article { outline: var(--pico-border-width) solid var(--pico-primary); }
+
+.form-page { max-width: 26rem; }
+
+/* lesson page: page with text lesson and chatbot helper */
+.lesson-page { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.lesson-page > header { flex-shrink: 0; padding-block: 0; --pico-nav-element-spacing-vertical: .25rem; }
+.lesson-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 480px; padding: 0; margin: 0; max-width: none; }
+
+.tutorial { overflow-y: auto; margin: 0; border-radius: 0; box-shadow: none; background: transparent; }
+.tutorial-header { margin-block: 1rem 1.5rem; }
+.tutorial-header h1 { margin: 0; font-size: 1.8rem; }
+.tutorial section { max-width: 45rem; margin-bottom: var(--pico-block-spacing-vertical); }
+
+/* chatbot helper */
+.helper { display: flex; flex-direction: column; min-height: 0; background: var(--pico-card-background-color); border-left: var(--pico-border-width) solid var(--pico-muted-border-color); }
+.helper > header { flex-shrink: 0; display: flex; gap: .75rem; align-items: center; padding: .75rem 1rem; border-bottom: var(--pico-border-width) solid var(--pico-muted-border-color); }
+.helper > header .emoji { font-size: 2rem; }
+.helper > header h2 { margin: 0; font-size: 1.05rem; }
+.helper > header p { margin: 0; font-size: .78rem; color: var(--pico-muted-color); }
+
+.chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: .75rem; }
+
+.msg { max-width: 88%; padding: .5rem .9rem; border-radius: 1rem; font-size: .7rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: break-word; }
+.msg p { margin-bottom: .5rem; }
+.msg p:last-child { margin-bottom: 0; }
+.msg img { max-width: 100%; border-radius: var(--pico-border-radius); margin-bottom: .4rem; }
+.msg-ai { align-self: flex-start; background: var(--pico-card-sectioning-background-color); border-bottom-left-radius: .25rem; }
+.msg-user { align-self: flex-end; background: var(--pico-primary-background); color: var(--pico-primary-inverse); border-bottom-right-radius: .25rem; }
+.msg-error { align-self: flex-start; border: var(--pico-border-width) solid var(--pico-del-color); color: var(--pico-del-color); }
+.msg-typing { color: var(--pico-muted-color); font-style: italic; }
+
+.chat-divider { display: flex; align-items: center; gap: .6rem; color: var(--pico-muted-color); font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; }
+.chat-divider::before, .chat-divider::after { content: ""; flex: 1; border-top: var(--pico-border-width) solid var(--pico-muted-border-color); }
+
+.chat-form { flex-shrink: 0; margin: 0; padding: .75rem; border-top: var(--pico-border-width) solid var(--pico-muted-border-color); }
+.chat-input-row { display: flex; gap: .5rem; align-items: center; }
+.chat-input-row > * { margin-bottom: 0; }
+.chat-input-row label { flex-shrink: 0; font-size: 1.3rem; cursor: pointer; padding: .2rem .4rem; border-radius: var(--pico-border-radius); user-select: none; }
+.chat-input-row label:hover { background: var(--pico-card-sectioning-background-color); }
+.chat-input-row input[type="text"] { flex: 1; font-size: .7rem; }
+.chat-input-row button { flex-shrink: 0; width: auto; font-size: .7rem; }
+
+#attach-preview { position: relative; width: fit-content; margin-bottom: .5rem; }
+#attach-preview img { max-height: 8rem; border-radius: var(--pico-border-radius); }
+#attach-preview button { position: absolute; top: .25rem; right: .25rem; width: 1.6rem; height: 1.6rem; padding: 0; line-height: 1; }
+
+.hidden { display: none; }
+
+@media (max-width: 768px) {
+  .lesson-page { height: auto; overflow: visible; }
+  .lesson-layout { grid-template-columns: 1fr; }
+  .tutorial { overflow: visible; }
+  .helper { display: none; }
+}
